@@ -1,7 +1,0 @@
-# Dependencias minimas para rodar perceptron_letras.py e o notebook
-numpy>=1.24
-matplotlib>=3.7
-
-# Somente se for abrir/rodar o notebook (.ipynb)
-notebook>=7.0
-ipykernel>=6.25
