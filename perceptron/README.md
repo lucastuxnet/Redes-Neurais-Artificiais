@@ -91,9 +91,6 @@ jupyter notebook trabalho03_perceptron.ipynb
 ├── perceptron_letras.py         # implementação principal (itens a e b + teste de ruído)
 ├── trabalho03_perceptron.ipynb  # notebook didático com teoria + código + gráficos
 ├── requirements.txt             # dependências (numpy, matplotlib, jupyter)
-├── relatorio.tex                # relatório LaTeX (corpo + código em anexo)
-├── abnt_capa.tex                # capa e folha de rosto ABNT (PPGEELT/UFU)
-├── relatorio.pdf                # relatório compilado
 └── saida/
     ├── resultados.png           # painel consolidado de resultados
     └── resultados.txt           # log da execução
