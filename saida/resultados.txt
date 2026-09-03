@@ -1,0 +1,41 @@
+======================================================================
+Trabalho 03 - Reconhecimento de letras X e T usando Perceptrons
+======================================================================
+
+Padroes de entrada (vetores bipolares de 25 posicoes):
+  x_X = [1, -1, -1, -1, 1, -1, 1, -1, 1, -1, -1, -1, 1, -1, -1, -1, 1, -1, 1, -1, 1, -1, -1, -1, 1]
+  x_T = [1, 1, 1, 1, 1, -1, -1, 1, -1, -1, -1, -1, 1, -1, -1, -1, -1, 1, -1, -1, -1, -1, 1, -1, -1]
+
+----------------------------------------------------------------------
+ITEM (a): Perceptron de 1 neuronio
+----------------------------------------------------------------------
+Convergiu em 3 epoca(s). Historico de erros por epoca: [1, 1, 0]
+Pesos finais (w): [0.0, -4.0, -4.0, -4.0, 0.0, 0.0, 4.0, -4.0, 4.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 4.0, -4.0, 4.0, 0.0, 4.0, 0.0, -4.0, 0.0, 4.0]
+Bias final (b): 0.0
+Saida para o padrao X: y = +1  (esperado +1)
+Saida para o padrao T: y = -1  (esperado -1)
+
+----------------------------------------------------------------------
+ITEM (b): Camada com 2 neuronios (Perceptrons independentes)
+----------------------------------------------------------------------
+Neuronio 1: convergiu em 3 epoca(s); erros por epoca = [1, 1, 0]
+  Pesos w1: [0.0, -4.0, -4.0, -4.0, 0.0, 0.0, 4.0, -4.0, 4.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 4.0, -4.0, 4.0, 0.0, 4.0, 0.0, -4.0, 0.0, 4.0]
+  Bias b1: 0.0
+Neuronio 2: convergiu em 2 epoca(s); erros por epoca = [2, 0]
+  Pesos w2: [0.0, 4.0, 4.0, 4.0, 0.0, 0.0, -4.0, 4.0, -4.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -4.0, 4.0, -4.0, 0.0, -4.0, 0.0, 4.0, 0.0, -4.0]
+  Bias b2: 0.0
+Saida (y1,y2) para o padrao X: (np.float64(1.0), np.float64(-1.0))  (esperado (+1,-1))
+Saida (y1,y2) para o padrao T: (np.float64(-1.0), np.float64(1.0))  (esperado (-1,+1))
+
+----------------------------------------------------------------------
+Teste de robustez a ruido (inversao aleatoria de pixels)
+----------------------------------------------------------------------
+  0 pixel(s) invertido(s): acerto item (a) = 100.0% | item (b) = 100.0%
+  1 pixel(s) invertido(s): acerto item (a) = 100.0% | item (b) = 100.0%
+  2 pixel(s) invertido(s): acerto item (a) = 100.0% | item (b) = 100.0%
+  3 pixel(s) invertido(s): acerto item (a) = 100.0% | item (b) = 100.0%
+  4 pixel(s) invertido(s): acerto item (a) = 100.0% | item (b) = 100.0%
+  5 pixel(s) invertido(s): acerto item (a) = 100.0% | item (b) = 100.0%
+  6 pixel(s) invertido(s): acerto item (a) =  99.8% | item (b) =  99.2%
+  7 pixel(s) invertido(s): acerto item (a) =  98.2% | item (b) =  97.2%
+  8 pixel(s) invertido(s): acerto item (a) =  95.3% | item (b) =  93.2%
