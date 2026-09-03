@@ -166,5 +166,5 @@ pdflatex relatorio.tex && pdflatex relatorio.tex
 
 ## Autor
 
-**Lucas Albino Martins** — PPGEELT/UFU
+**Lucas Martins** — PPGEELT/UFU lucas.martins@ufu.br
 Disciplina EL056 – Redes Neurais Artificiais — Prof. Dr. Keiji Yamanaka
