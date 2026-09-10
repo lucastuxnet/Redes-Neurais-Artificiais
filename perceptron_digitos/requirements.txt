@@ -1,0 +1,5 @@
+numpy>=1.24
+matplotlib>=3.6
+notebook>=7.0
+# Opcional, só para abrir o notebook:
+# jupyterlab>=4.0
