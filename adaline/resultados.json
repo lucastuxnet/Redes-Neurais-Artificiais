@@ -1,0 +1,369 @@
+{
+  "n_amostras": 20,
+  "n_classe_pos": 10,
+  "n_classe_neg": 10,
+  "estatisticas": {
+    "s1": {
+      "count": 20.0,
+      "mean": 1.4587,
+      "std": 0.8472,
+      "min": 0.169,
+      "25%": 0.7295,
+      "50%": 1.5565,
+      "75%": 2.1822,
+      "max": 2.764
+    },
+    "s2": {
+      "count": 20.0,
+      "mean": 1.5549,
+      "std": 0.7971,
+      "min": 0.09,
+      "25%": 0.9135,
+      "50%": 1.62,
+      "75%": 2.0875,
+      "max": 2.932
+    }
+  },
+  "treino_completo": {
+    "eta": 0.0025,
+    "epsilon": 1e-06,
+    "seed": 42,
+    "w_inicial": [
+      0.274,
+      -0.0611,
+      0.3586
+    ],
+    "theta": -2.0418,
+    "w1": -0.7492,
+    "w2": -0.6202,
+    "epocas": 704,
+    "eqt_inicial": 28.2577,
+    "eqt_final": 3.709824,
+    "eqm_final": 0.185491,
+    "convergiu": true
+  },
+  "desempenho_treino": {
+    "acuracia": 1.0,
+    "precisao": 1.0,
+    "revocacao": 1.0,
+    "f1": 1.0,
+    "VP": 10,
+    "FN": 0,
+    "FP": 0,
+    "VN": 10
+  },
+  "tabela_eta": [
+    {
+      "eta": 0.1,
+      "epocas": 44,
+      "eqt_final": 10.1977,
+      "acuracia": 0.95,
+      "convergiu": true
+    },
+    {
+      "eta": 0.05,
+      "epocas": 75,
+      "eqt_final": 6.527,
+      "acuracia": 0.95,
+      "convergiu": true
+    },
+    {
+      "eta": 0.01,
+      "epocas": 187,
+      "eqt_final": 3.7796,
+      "acuracia": 1.0,
+      "convergiu": true
+    },
+    {
+      "eta": 0.0025,
+      "epocas": 704,
+      "eqt_final": 3.7098,
+      "acuracia": 1.0,
+      "convergiu": true
+    },
+    {
+      "eta": 0.001,
+      "epocas": 1586,
+      "eqt_final": 3.709,
+      "acuracia": 1.0,
+      "convergiu": true
+    }
+  ],
+  "holdout_detalhe": {
+    "idx_treino": [
+      4,
+      12,
+      16,
+      11,
+      1,
+      6,
+      13,
+      8,
+      17,
+      9,
+      19,
+      5,
+      7,
+      14
+    ],
+    "idx_teste": [
+      10,
+      2,
+      0,
+      18,
+      3,
+      15
+    ],
+    "theta": -2.3313,
+    "w1": -0.8215,
+    "w2": -0.7357,
+    "epocas": 1176,
+    "u_teste": [
+      0.5181,
+      1.6108,
+      -1.0062,
+      -0.7847,
+      -1.7376,
+      1.4257
+    ],
+    "y_teste": [
+      1,
+      1,
+      -1,
+      -1,
+      -1,
+      1
+    ],
+    "d_teste": [
+      1,
+      1,
+      -1,
+      -1,
+      -1,
+      1
+    ],
+    "metricas": {
+      "acuracia": 1.0,
+      "precisao": 1.0,
+      "revocacao": 1.0,
+      "f1": 1.0,
+      "VP": 3,
+      "FN": 0,
+      "FP": 0,
+      "VN": 3
+    }
+  },
+  "holdout": [
+    {
+      "rodada": 1,
+      "epocas": 1176,
+      "acc_treino": 1.0,
+      "acc_teste": 1.0,
+      "eqm_final": 0.186613
+    },
+    {
+      "rodada": 2,
+      "epocas": 850,
+      "acc_treino": 1.0,
+      "acc_teste": 1.0,
+      "eqm_final": 0.154082
+    },
+    {
+      "rodada": 3,
+      "epocas": 1102,
+      "acc_treino": 1.0,
+      "acc_teste": 1.0,
+      "eqm_final": 0.204177
+    },
+    {
+      "rodada": 4,
+      "epocas": 978,
+      "acc_treino": 1.0,
+      "acc_teste": 1.0,
+      "eqm_final": 0.159434
+    },
+    {
+      "rodada": 5,
+      "epocas": 1261,
+      "acc_treino": 1.0,
+      "acc_teste": 1.0,
+      "eqm_final": 0.18754
+    },
+    {
+      "rodada": 6,
+      "epocas": 864,
+      "acc_treino": 1.0,
+      "acc_teste": 1.0,
+      "eqm_final": 0.180141
+    },
+    {
+      "rodada": 7,
+      "epocas": 995,
+      "acc_treino": 1.0,
+      "acc_teste": 1.0,
+      "eqm_final": 0.132672
+    },
+    {
+      "rodada": 8,
+      "epocas": 944,
+      "acc_treino": 1.0,
+      "acc_teste": 1.0,
+      "eqm_final": 0.176015
+    },
+    {
+      "rodada": 9,
+      "epocas": 998,
+      "acc_treino": 1.0,
+      "acc_teste": 0.8333,
+      "eqm_final": 0.154306
+    },
+    {
+      "rodada": 10,
+      "epocas": 1008,
+      "acc_treino": 1.0,
+      "acc_teste": 1.0,
+      "eqm_final": 0.238048
+    }
+  ],
+  "holdout_resumo": {
+    "media": 0.9833,
+    "desvio": 0.0527,
+    "min": 0.8333,
+    "max": 1.0
+  },
+  "loocv": {
+    "acuracia": 1.0,
+    "acertos": 20,
+    "total": 20,
+    "indices_erro": []
+  },
+  "novos_padroes": [
+    {
+      "s1": 0.5,
+      "s2": 0.5,
+      "u": 1.3571,
+      "y": 1
+    },
+    {
+      "s1": 0.9,
+      "s2": 1.1,
+      "u": 0.6853,
+      "y": 1
+    },
+    {
+      "s1": 1.5,
+      "s2": 1.2,
+      "u": 0.1737,
+      "y": 1
+    },
+    {
+      "s1": 1.6,
+      "s2": 1.9,
+      "u": -0.3353,
+      "y": -1
+    },
+    {
+      "s1": 2.4,
+      "s2": 2.4,
+      "u": -1.2448,
+      "y": -1
+    },
+    {
+      "s1": 2.9,
+      "s2": 0.8,
+      "u": -0.6271,
+      "y": -1
+    }
+  ],
+  "perceptron": {
+    "epocas": 23,
+    "acuracia": 1.0,
+    "theta": -0.036,
+    "w1": -0.0096,
+    "w2": -0.0146
+  },
+  "margens": {
+    "adaline_min": 0.1703,
+    "perceptron_min": 0.0018,
+    "padrao_critico": 15,
+    "angulo_graus": 16.92
+  },
+  "estabilidade": {
+    "theta_media": -2.0418,
+    "theta_desvio": 4e-05,
+    "w1_media": -0.7492,
+    "w1_desvio": 1e-05,
+    "w2_media": -0.6202,
+    "w2_desvio": 1e-05,
+    "epocas_media": 686.9,
+    "epocas_desvio": 17.8,
+    "eqm_media": 0.185492,
+    "eqm_desvio": 2.9e-07
+  },
+  "solucao_analitica": {
+    "theta": -2.0665,
+    "w1": -0.7504,
+    "w2": -0.6251,
+    "eqm": 0.185234,
+    "eqm_gradiente": 0.185491,
+    "erro_relativo_pct": 0.1387
+  },
+  "ruido": {
+    "sigmas": [
+      0.0,
+      0.05,
+      0.1,
+      0.15,
+      0.2,
+      0.25,
+      0.3,
+      0.35,
+      0.4,
+      0.45,
+      0.5,
+      0.55,
+      0.6
+    ],
+    "adaline_media": [
+      1.0,
+      1.0,
+      0.9975,
+      0.99,
+      0.9817,
+      0.97,
+      0.9537,
+      0.9478,
+      0.934,
+      0.9085,
+      0.9065,
+      0.8892,
+      0.8758
+    ],
+    "perceptron_media": [
+      1.0,
+      0.9772,
+      0.971,
+      0.9695,
+      0.9625,
+      0.9505,
+      0.9428,
+      0.931,
+      0.914,
+      0.894,
+      0.887,
+      0.8728,
+      0.8625
+    ],
+    "repeticoes": 200,
+    "sigma_95_adaline": 0.3,
+    "sigma_95_perceptron": 0.25,
+    "acc_sigma_010": {
+      "adaline": 0.9975,
+      "perceptron": 0.971
+    },
+    "acc_sigma_030": {
+      "adaline": 0.9537,
+      "perceptron": 0.9428
+    }
+  }
+}

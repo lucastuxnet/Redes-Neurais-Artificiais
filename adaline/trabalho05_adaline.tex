@@ -1,0 +1,507 @@
+%=====================================================================
+%  Trabalho 05 - Classificacao de Padroes com a Rede Neural Adaline
+%  EL056 - Redes Neurais Artificiais - PPGEELT/UFU
+%  Lucas Albino Martins - 12622EEL006
+%
+%  Compilar com:  pdflatex trabalho05_adaline.tex   (duas vezes)
+%  Requer: figs/fig1_dispersao.png, fig2_eqt.png, fig5_regioes.png,
+%          fig6_teste.png, fig7_comparacao.png  (gerados por adaline_b2.py)
+%=====================================================================
+\documentclass[12pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+% Babel em portugues quando disponivel; caso contrario traduz os rotulos
+% essenciais, mantendo o arquivo compilavel em qualquer distribuicao TeX.
+\IfFileExists{portuges.ldf}{\usepackage[brazil]{babel}}{%
+  \usepackage[english]{babel}%
+  \renewcommand{\figurename}{Figura}%
+  \renewcommand{\tablename}{Tabela}%
+  \renewcommand{\refname}{Refer\^encias}}
+
+\usepackage{mathptmx}                         % Times (fonte serifada ABNT)
+\usepackage[margin=3cm,right=2cm,bottom=2cm]{geometry}
+\usepackage{setspace}
+\usepackage{graphicx}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage{indentfirst}
+\usepackage{ragged2e}
+\usepackage[font=small,labelfont=bf,justification=centering,skip=4pt]{caption}
+\usepackage{subcaption}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage[hidelinks,plainpages=false,pdfpagelabels=false]{hyperref}
+
+% --- Estilo de listagem para o codigo-fonte do apendice ---------------------
+\definecolor{codekw}{RGB}{0,86,140}
+\definecolor{codestr}{RGB}{160,40,40}
+\definecolor{codecmt}{RGB}{110,120,125}
+\definecolor{codenum}{RGB}{150,150,150}
+\lstdefinestyle{pycode}{%
+  language=Python,
+  basicstyle=\ttfamily\scriptsize,
+  keywordstyle=\color{codekw}\bfseries,
+  stringstyle=\color{codestr},
+  commentstyle=\color{codecmt}\itshape,
+  numbers=left, numberstyle=\ttfamily\tiny\color{codenum}, numbersep=7pt,
+  showstringspaces=false,
+  breaklines=true, breakatwhitespace=true,
+  breakindent=0pt, postbreak=\mbox{{\color{codenum}$\hookrightarrow$}\space},
+  columns=fixed, keepspaces=true, tabsize=4,
+  frame=leftline, framesep=6pt, rulecolor=\color{codenum},
+  xleftmargin=20pt, aboveskip=6pt, belowskip=6pt,
+  upquote=true, extendedchars=true, inputencoding=utf8,
+  morekeywords={self,None,True,False,dataclass,field}}
+
+% Espacamento mais compacto nos titulos (mantem a hierarquia ABNT)
+\makeatletter
+\renewcommand\section{\@startsection{section}{1}{\z@}%
+  {-2.2ex \@plus -1ex \@minus -.2ex}{1.1ex \@plus .2ex}%
+  {\normalfont\large\bfseries}}
+\renewcommand\subsection{\@startsection{subsection}{2}{\z@}%
+  {-2.0ex \@plus -1ex \@minus -.2ex}{0.8ex \@plus .2ex}%
+  {\normalfont\normalsize\bfseries}}
+\makeatother
+
+\setlength{\parindent}{1.25cm}
+\setlength{\abovedisplayskip}{6pt}
+\setlength{\belowdisplayskip}{6pt}
+\onehalfspacing
+
+\input{abnt_capa.tex}
+
+%=====================================================================
+\begin{document}
+\justifying
+
+\fazcapa
+\fazfolhaderosto
+
+\setcounter{page}{1}
+
+\begin{center}
+  {\fontsize{13}{16}\selectfont\bfseries \TituloTexto\par}
+  \vspace{0.2cm}
+  {\fontsize{11}{13}\selectfont Lucas Albino Martins -- 12622EEL006\par}
+  \vspace{0.1cm}
+  \rule{0.45\textwidth}{0.6pt}
+\end{center}
+
+\vspace{0.1cm}
+
+{\small\singlespacing\noindent
+\textbf{Resumo}\;---\;Este trabalho apresenta o treinamento e a avalia\c{c}\~ao de
+uma rede neural Adaline aplicada \`a classifica\c{c}\~ao de padr\~oes da base de
+dados B2, composta por 20 amostras descritas por dois atributos cont\'inuos e
+rotuladas em duas classes bipolares. A rede foi treinada pela regra Delta
+(Widrow--Hoff), com taxa de aprendizagem $\eta = 0{,}0025$ e crit\'erio de parada
+baseado na varia\c{c}\~ao do erro quadr\'atico m\'edio ($\varepsilon = 10^{-6}$).
+O erro quadr\'atico total decresceu monotonicamente de 28,26 para 3,71 ao longo de
+704 \'epocas, a 0,139\,\% do m\'inimo anal\'itico, e a rede classificou corretamente
+os 20 padr\~oes. O teste empregou \textit{holdout} estratificado 70/30 repetido dez
+vezes (98,3\,\% $\pm$ 5,3\,\%), valida\c{c}\~ao cruzada \textit{leave-one-out}
+(100\,\%) e opera\c{c}\~ao sobre padr\~oes in\'editos. Embora Adaline e Perceptron
+atinjam 100\,\% de acerto, a primeira produz fronteira com margem 97 vezes maior,
+reproduz\'ivel e mais rob\'usta a ru\'ido nos atributos.\par
+\vspace{0.15cm}
+\noindent\textbf{Palavras-chave}: Adaline; regra Delta; classifica\c{c}\~ao de
+padr\~oes; erro quadr\'atico total; Widrow--Hoff.\par}
+
+\vspace{0.25cm}
+
+%=====================================================================
+\section{Introdu\c{c}\~ao}
+%=====================================================================
+
+A Adaline (\textit{ADAptive LInear NEuron}), proposta por Widrow e Hoff em 1960,
+\'e uma das arquiteturas fundadoras da \'area de redes neurais artificiais
+\cite{widrow1960}. Contempor\^anea do Perceptron de Rosenblatt e igualmente limitada
+a problemas linearmente separ\'aveis, ela introduziu uma contribui\c{c}\~ao
+conceitual muito mais duradoura: o treinamento por minimiza\c{c}\~ao de uma
+fun\c{c}\~ao de custo cont\'inua e diferenci\'avel, por descida do gradiente ---
+a regra Delta, ou algoritmo LMS (\textit{Least Mean Square}), base direta do
+\textit{backpropagation} \cite{widrow1990,haykin2001}.
+
+O objetivo deste trabalho \'e treinar uma Adaline para classificar os padr\~oes da
+base B2, apresentar graficamente o erro quadr\'atico total (EQT) durante o
+treinamento e avaliar a rede sobre dados n\~ao utilizados no ajuste dos pesos.
+Al\'em desses tr\^es itens, investigam-se a influ\^encia da taxa de aprendizagem, a
+estabilidade da solu\c{c}\~ao frente a diferentes inicializa\c{c}\~oes e as
+diferen\c{c}as pr\'aticas entre as solu\c{c}\~oes da Adaline e do Perceptron.
+
+%=====================================================================
+\section{Fundamenta\c{c}\~ao te\'orica}
+\label{sec:fund}
+%=====================================================================
+
+A Adaline \'e uma rede de camada \'unica constitu\'ida por um \'unico neur\^onio.
+Adotando a conven\c{c}\~ao de Silva, Spatti e Flauzino \cite{silva2016}, na qual o
+vetor de entrada \'e aumentado com $x_0 = -1$ para incorporar o limiar de
+ativa\c{c}\~ao $\theta$ ao vetor de pesos, o potencial de ativa\c{c}\~ao \'e
+
+\begin{equation}
+u \;=\; \sum_{i=1}^{n} w_i x_i - \theta \;=\; \mathbf{W}^{\top}\mathbf{X},
+\qquad
+\mathbf{W} = [\,\theta\;\;w_1\;\;\cdots\;\;w_n\,]^{\top}.
+\label{eq:u}
+\end{equation}
+
+Durante o treinamento a fun\c{c}\~ao de ativa\c{c}\~ao \'e \textbf{linear},
+$g(u) = u$; somente na opera\c{c}\~ao aplica-se a fun\c{c}\~ao sinal, produzindo
+$y = \mathrm{sgn}(u) \in \{-1,+1\}$. Essa separa\c{c}\~ao \'e a diferen\c{c}a
+essencial em rela\c{c}\~ao ao Perceptron, que calcula o erro \emph{ap\'os} a
+fun\c{c}\~ao degrau e descarta a informa\c{c}\~ao sobre qu\~ao distante da fronteira
+o padr\~ao se encontra. O ajuste minimiza o erro quadr\'atico entre o valor
+desejado $d^{(p)}$ e o potencial $u^{(p)}$ sobre os $P$ padr\~oes:
+
+\begin{equation}
+E(\mathbf{W}) = \frac{1}{2}\sum_{p=1}^{P}\bigl(d^{(p)} - u^{(p)}\bigr)^{2}
+\qquad\Longrightarrow\qquad
+\nabla E(\mathbf{W}) = -\sum_{p=1}^{P}\bigl(d^{(p)} - u^{(p)}\bigr)\mathbf{X}^{(p)} .
+\label{eq:custo}
+\end{equation}
+
+Como $E(\mathbf{W})$ \'e uma forma quadr\'atica nos pesos, sua superf\'icie \'e
+convexa e possui m\'inimo global \'unico. Caminhando na dire\c{c}\~ao oposta ao
+gradiente obt\'em-se a regra Delta, aqui aplicada de forma sequencial:
+
+\begin{equation}
+\mathbf{W} \leftarrow \mathbf{W} + \eta\,\bigl(d^{(p)} - u^{(p)}\bigr)\mathbf{X}^{(p)} .
+\label{eq:delta}
+\end{equation}
+
+O treinamento \'e monitorado pelo erro quadr\'atico total e pelo m\'edio ao final
+de cada \'epoca $k$,
+
+\begin{equation}
+\mathrm{EQT}(k) = \sum_{p=1}^{P}\bigl(d^{(p)} - u^{(p)}\bigr)^{2},
+\qquad
+\mathrm{EQM}(k) = \frac{1}{P}\,\mathrm{EQT}(k),
+\label{eq:eqt}
+\end{equation}
+
+\noindent com crit\'erio de parada
+$\bigl|\mathrm{EQM}(k) - \mathrm{EQM}(k-1)\bigr| \le \varepsilon$. Por comparar
+alvos bipolares a uma sa\'ida cont\'inua, o EQT converge para valor estritamente
+positivo mesmo com separa\c{c}\~ao perfeita: o patamar atingido indica proximidade
+do m\'inimo, e n\~ao a quantidade de padr\~oes classificados incorretamente.
+
+%=====================================================================
+\section{Metodologia}
+\label{sec:met}
+%=====================================================================
+
+A base B2 re\'une 20 amostras descritas por dois atributos cont\'inuos, $s_1$ e
+$s_2$, associadas a um r\'otulo bipolar $t \in \{-1,+1\}$, perfeitamente balanceada
+(10 amostras por classe). Ambos os atributos variam em faixas equivalentes ---
+$s_1 \in [0{,}169;\,2{,}764]$ e $s_2 \in [0{,}090;\,2{,}932]$ ---, dispensando
+normaliza\c{c}\~ao. Na Figura~\ref{fig:base}(a) as classes ocupam regi\~oes opostas
+do plano e aparentam ser linearmente separ\'aveis, com os padr\~oes
+n\textsuperscript{o} 13 $(0{,}856;\,1{,}904)$ e n\textsuperscript{o} 15
+$(1{,}587;\,1{,}642)$ pr\'oximos da fronteira.
+
+A rede foi implementada em Python 3, com \texttt{NumPy}, \texttt{pandas} e
+\texttt{Matplotlib}. Os pesos iniciais foram sorteados de uma distribui\c{c}\~ao
+uniforme em $[-0{,}5;\,0{,}5]$ e o treinamento seguiu a
+Equa\c{c}\~ao~\ref{eq:delta}, com $\eta = 0{,}0025$, $\varepsilon = 10^{-6}$ e
+limite de seguran\c{c}a de 10.000 \'epocas. Como avaliar a rede apenas sobre os
+padr\~oes usados no ajuste produziria estimativa otimista, o teste empregou tr\^es
+procedimentos complementares: \textit{holdout} estratificado 70/30 (14 amostras
+para treinamento e 6 para teste), repetido em dez parti\c{c}\~oes aleat\'orias;
+valida\c{c}\~ao cruzada \textit{leave-one-out}, em que cada amostra \'e reservada
+enquanto a rede \'e retreinada com as 19 restantes; e opera\c{c}\~ao sobre seis
+padr\~oes in\'editos.
+
+%=====================================================================
+\section{Resultados e discuss\~ao}
+\label{sec:res}
+%=====================================================================
+
+\subsection{Treinamento e erro quadr\'atico total}
+
+O treinamento sobre a base completa convergiu em \textbf{704 \'epocas}, com pesos
+finais $\theta = -2{,}0418$, $w_1 = -0{,}7492$ e $w_2 = -0{,}6202$
+(Tabela~\ref{tab:treino}), correspondentes \`a fronteira de decis\~ao
+
+\begin{equation}
+-0{,}7492\,s_1 \;-\; 0{,}6202\,s_2 \;+\; 2{,}0418 \;=\; 0 .
+\label{eq:fronteira}
+\end{equation}
+
+\begin{table}[H]
+\centering
+\caption{Par\^ametros e resultados do treinamento sobre a base B2 completa.}
+\label{tab:treino}
+{\small\singlespacing
+\begin{tabular}{@{}lr@{\hskip 1.0cm}lr@{}}
+\toprule
+\textbf{Par\^ametro} & \textbf{Valor} & \textbf{Resultado} & \textbf{Valor} \\
+\midrule
+Taxa de aprendizagem $\eta$ & 0,0025 & \'Epocas at\'e convergir & 704 \\
+Precis\~ao requerida $\varepsilon$ & $10^{-6}$ & EQT inicial & 28,2577 \\
+Padr\~oes de treinamento $P$ & 20 & EQT final & 3,7098 \\
+Entradas por padr\~ao $n$ & 2 & EQM final & 0,185491 \\
+Pesos iniciais & $\mathcal{U}(-0{,}5;\,0{,}5)$ & Acur\'acia no treinamento & 100,0\,\% \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+A Figura~\ref{fig:eqt} apresenta a evolu\c{c}\~ao do erro quadr\'atico total
+exigida no enunciado. A curva \'e \textbf{monotonicamente decrescente e livre de
+oscila\c{c}\~oes}, comportamento esperado de uma descida de gradiente sobre
+superf\'icie convexa: cerca de 90\,\% da redu\c{c}\~ao ocorre nas primeiras 200
+\'epocas, e as demais correspondem ao refinamento fino interrompido pelo
+crit\'erio de parada, explicitado no painel (b). O patamar em
+$\mathrm{EQT} \approx 3{,}71$ \emph{n\~ao} representa erro de classifica\c{c}\~ao:
+\'e o res\'iduo estrutural entre alvos bipolares e sa\'ida linear, e nesse ponto a
+rede j\'a acerta os 20 padr\~oes. A Figura~\ref{fig:base}(b) exibe as regi\~oes de
+decis\~ao coloridas pelo valor de $u$ --- informa\c{c}\~ao que o Perceptron
+descarta, mas que na Adaline mede a confian\c{c}a da decis\~ao.
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}[b]{0.305\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figs/fig1_dispersao.png}
+  \caption{padr\~oes da base B2}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.305\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figs/fig5_regioes.png}
+  \caption{regi\~oes de decis\~ao}
+\end{subfigure}
+\caption{Distribui\c{c}\~ao das classes da base B2 e regi\~oes de decis\~ao
+obtidas pela Adaline treinada.}
+\label{fig:base}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.58\textwidth]{figs/fig2_eqt.png}
+\caption{Erro quadr\'atico total ao longo do treinamento (a) e varia\c{c}\~ao do
+erro quadr\'atico m\'edio entre \'epocas consecutivas, usada como crit\'erio de
+parada (b).}
+\label{fig:eqt}
+\end{figure}
+
+\subsection{Influ\^encia da taxa de aprendizagem}
+
+Como a fun\c{c}\~ao de custo \'e quadr\'atica, o m\'inimo desta base tem solu\c{c}\~ao
+fechada pelas equa\c{c}\~oes normais: $\mathbf{W}^{*} = [-2{,}0665;\,-0{,}7504;\,
+-0{,}6251]$, com $\mathrm{EQM}^{*} = 0{,}185234$. Essa refer\^encia permite medir
+exatamente aonde cada treinamento chegou --- a configura\c{c}\~ao adotada ficou a
+apenas 0,139\,\% desse valor.
+
+A Tabela~\ref{tab:eta} resume cinco treinamentos id\^enticos exceto pelo valor de
+$\eta$. A leitura imediata \'e que taxas menores exigem mais \'epocas; o dado
+relevante, por\'em, \'e que taxas maiores \emph{param num erro pior}. A
+explica\c{c}\~ao natural seria diverg\^encia, mas ela n\~ao se sustenta: o
+crit\'erio de estabilidade do LMS \'e $\eta < 2/\lambda_{\max}$, e os autovalores da
+matriz de autocorrela\c{c}\~ao desta base ($\lambda_{\max} = 6{,}2583$) situam o
+limite em $\eta < 0{,}3196$, acima de todos os valores testados.
+
+O fen\^omeno \'e o \textbf{desajuste} (\textit{misadjustment}) do LMS sequencial:
+dentro de uma mesma \'epoca cada padr\~ao puxa os pesos para o seu lado e, com
+passo grande, a composi\c{c}\~ao das $P$ atualiza\c{c}\~oes possui um ponto fixo
+\emph{deslocado} do m\'inimo verdadeiro, com desvio proporcional a $\eta$. Que se
+trata de ponto fixo, e n\~ao de oscila\c{c}\~ao aleat\'oria, comprova-se pelo fato
+de $\eta = 0{,}1$ convergir para pesos id\^enticos a partir de inicializa\c{c}\~oes
+diferentes. O crit\'erio de parada, portanto, n\~ao falhou --- a varia\c{c}\~ao
+entre \'epocas realmente foi a zero; o que compromete o resultado \'e a
+localiza\c{c}\~ao do ponto de converg\^encia, cujo desvio inclina a fronteira o
+bastante para deixar o padr\~ao n\textsuperscript{o} 13 do lado errado
+($u = -0{,}296$). Adotou-se $\eta = 0{,}0025$ por retorno decrescente: entre ele e
+$0{,}001$ o EQM melhora apenas na quarta casa decimal, ao custo do dobro de
+\'epocas.
+
+\begin{table}[H]
+\centering
+\caption{Efeito da taxa de aprendizagem sobre a converg\^encia
+($\varepsilon = 10^{-6}$, mesma inicializa\c{c}\~ao de pesos), comparado ao
+m\'inimo obtido analiticamente.}
+\label{tab:eta}
+{\small\singlespacing
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+\textbf{Taxa $\eta$} & \textbf{\'Epocas} & \textbf{EQT final} & \textbf{EQM final}
+& \textbf{Acur\'acia} \\
+\midrule
+0,1000 & 44 & 10,1977 & 0,509886 & 95,0\,\% \\
+0,0500 & 75 & 6,5270 & 0,326348 & 95,0\,\% \\
+0,0100 & 187 & 3,7796 & 0,188979 & 100,0\,\% \\
+\textbf{0,0025} & \textbf{704} & \textbf{3,7098} & \textbf{0,185491} & \textbf{100,0\,\%} \\
+0,0010 & 1586 & 3,7090 & 0,185450 & 100,0\,\% \\
+\midrule
+\textit{m\'inimo anal\'itico} & --- & \textit{3,7047} & \textit{0,185234} & \textit{100,0\,\%} \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\subsection{Teste da rede treinada}
+
+A rede do trabalho \'e a treinada com as 20 amostras (Se\c{c}\~ao~4.1). Como a
+base B2 n\~ao acompanha conjunto de teste separado, os protocolos a seguir
+\textbf{retreinam} a rede em subconjuntos, apenas para estimar a capacidade de
+generaliza\c{c}\~ao.
+
+Na primeira parti\c{c}\~ao \textit{holdout}, a rede treinada com 14 amostras
+classificou corretamente as 6 reservadas (Tabela~\ref{tab:teste} e
+Figura~\ref{fig:teste}(a)). Em dez parti\c{c}\~oes distintas, a acur\'acia m\'edia
+de teste foi de \textbf{98,3\,\% $\pm$ 5,3\,\%}: nove rodadas com 100\,\% e uma com
+83,3\,\% (5 acertos em 6). O \'unico erro do experimento envolveu o padr\~ao
+n\textsuperscript{o} 13, com $u = -0{,}057$ --- praticamente sobre a fronteira ---
+cuja aus\^encia do treinamento deslocou o hiperplano o bastante para inverter sua
+classifica\c{c}\~ao.
+
+\begin{table}[H]
+\centering
+\caption{Teste da rede treinada com 14 amostras: sa\'idas para as 6 amostras
+reservadas ($\theta = -2{,}3313$, $w_1 = -0{,}8215$, $w_2 = -0{,}7357$).}
+\label{tab:teste}
+{\small\singlespacing
+\begin{tabular}{@{}crrrrrc@{}}
+\toprule
+\textbf{Amostra} & $\mathbf{s_1}$ & $\mathbf{s_2}$ & $\mathbf{t}$ \textbf{(desejado)}
+& $\mathbf{u}$ & $\mathbf{y}$ \textbf{(obtido)} & \textbf{Resultado} \\
+\midrule
+11 & 1,367 & 0,938 & $+1$ & $+0{,}5181$ & $+1$ & correto \\
+3  & 0,294 & 0,651 & $+1$ & $+1{,}6108$ & $+1$ & correto \\
+1  & 2,215 & 2,063 & $-1$ & $-1{,}0062$ & $-1$ & correto \\
+19 & 2,764 & 1,149 & $-1$ & $-0{,}7847$ & $-1$ & correto \\
+4  & 2,327 & 2,932 & $-1$ & $-1{,}7376$ & $-1$ & correto \\
+16 & 0,350 & 0,840 & $+1$ & $+1{,}4257$ & $+1$ & correto \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+A valida\c{c}\~ao \textit{leave-one-out}, mais adequada a bases pequenas por usar
+19 das 20 amostras em cada treinamento, resultou em \textbf{20 acertos em 20
+parti\c{c}\~oes (100\,\%)}, inclusive para o padr\~ao n\textsuperscript{o} 13. O
+contraste \'e informativo: com 14 amostras a fronteira ainda \'e sens\'ivel \`a
+composi\c{c}\~ao do conjunto de treinamento; com 19, j\'a se estabiliza. Os seis
+padr\~oes in\'editos receberam r\'otulos coerentes com a
+Equa\c{c}\~ao~\ref{eq:fronteira}, com $|u|$ proporcional \`a dist\^ancia at\'e a
+fronteira: $(0{,}50;\,0{,}50)$ produziu $u = +1{,}3571$, enquanto
+$(1{,}50;\,1{,}20)$ resultou em $u = +0{,}1737$, decis\~ao de baixa
+confian\c{c}a.
+
+\subsection{Estabilidade e compara\c{c}\~ao com o Perceptron}
+
+Com 20 inicializa\c{c}\~oes aleat\'orias distintas, os par\^ametros finais
+mantiveram-se praticamente id\^enticos ($\theta = -2{,}0418 \pm 4\times10^{-5}$;
+EQM $= 0{,}185492 \pm 2{,}9\times10^{-7}$), variando apenas o n\'umero de \'epocas
+($686{,}9 \pm 17{,}8$) --- confirma\c{c}\~ao emp\'irica da unicidade do m\'inimo.
+
+O contraste com o Perceptron treinado sobre a mesma base evidencia o efeito
+pr\'atico da regra Delta. O Perceptron convergiu em apenas 23 \'epocas, tamb\'em com
+100\,\% de acerto, porque interrompe o aprendizado assim que nenhum padr\~ao \'e
+classificado incorretamente --- a primeira fronteira v\'alida \'e aceita, e ela
+passa a $0{,}0018$ do padr\~ao n\textsuperscript{o} 13. A Adaline, por minimizar o
+erro sobre o potencial de ativa\c{c}\~ao, segue ajustando os pesos mesmo sem erros
+e posiciona o hiperplano a $0{,}1703$ do padr\~ao mais pr\'oximo --- margem
+\textbf{97 vezes maior}, com as fronteiras separadas por $16{,}92^{\circ}$.
+
+\subsection{Robustez a ru\'ido nos atributos}
+
+A vantagem da margem \'e, at\'e aqui, um argumento geom\'etrico. Para verific\'a-la,
+as duas redes j\'a treinadas foram submetidas a entradas corrompidas por ru\'ido
+gaussiano de desvio-padr\~ao $\sigma$ crescente, com 200 repeti\c{c}\~oes por n\'ivel
+(Figura~\ref{fig:teste}(b)). J\'a em $\sigma = 0{,}05$ a Adaline permanece em
+100\,\% enquanto o Perceptron cai para 97,7\,\% --- o padr\~ao
+n\textsuperscript{o} 13 sendo invertido em cerca de metade das repeti\c{c}\~oes, por
+estar praticamente sobre a sua fronteira. A vantagem persiste em toda a faixa
+testada, entre 1,0 e 2,6 pontos percentuais.
+
+A diferen\c{c}a, por\'em, n\~ao cresce indefinidamente: com $\sigma$ elevado o
+ru\'ido desloca tamb\'em padr\~oes distantes da fronteira e as duas redes degradam
+de forma semelhante. A margem protege contra perturba\c{c}\~oes \emph{pequenas},
+regime em que o custo adicional de \'epocas da Adaline se justifica.
+
+
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}[b]{0.305\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figs/fig6_teste.png}
+  \caption{teste com \textit{holdout} 70/30}
+\end{subfigure}
+\hfill
+\begin{subfigure}[b]{0.305\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figs/fig8_ruido.png}
+  \caption{degrada\c{c}\~ao sob ru\'ido}
+\end{subfigure}
+\caption{Teste da rede treinada sobre as amostras reservadas (a) e acur\'acia das
+duas redes sob ru\'ido gaussiano nos atributos (b), com 200 repeti\c{c}\~oes por
+n\'ivel; a faixa sombreada indica $\pm$1 desvio-padr\~ao.}
+\label{fig:teste}
+\end{figure}
+
+%=====================================================================
+\section{Conclus\~ao}
+\label{sec:conc}
+%=====================================================================
+
+A Adaline treinada pela regra Delta classificou corretamente os 20 padr\~oes da
+base B2, com pesos a 0,139\,\% do m\'inimo anal\'itico, e o EQT decresceu
+monotonicamente de 28,26 para 3,71 em 704 \'epocas --- o res\'iduo n\~ao nulo \'e
+inerente aos alvos bipolares com sa\'ida linear, n\~ao falha de aprendizado. O
+teste retornou 98,3\,\% $\pm$ 5,3\,\% sob \textit{holdout} estratificado repetido e
+100\,\% sob \textit{leave-one-out}.
+
+A taxa de aprendizagem mostrou-se cr\'itica por um mecanismo menos \'obvio que a
+diverg\^encia: todos os valores ficaram dentro do limite $\eta < 0{,}3196$, mas os
+maiores sofrem desajuste e convergem para um ponto fixo deslocado do m\'inimo,
+degradando a acur\'acia a 95,0\,\%. Frente ao Perceptron, a formula\c{c}\~ao por
+m\'inimos quadrados entregou margem 97 vezes maior, solu\c{c}\~ao reproduz\'ivel e
+acur\'acia superior sob ru\'ido. Como extens\~ao natural, a mesma
+implementa\c{c}\~ao pode ser aplicada a bases n\~ao linearmente separ\'aveis, nas
+quais a Adaline degrada gradualmente enquanto o Perceptron n\~ao converge.
+
+%=====================================================================
+\enlargethispage{1.5\baselineskip}
+\begin{thebibliography}{9}
+\singlespacing\footnotesize
+\setlength{\itemsep}{1pt}\setlength{\parskip}{0pt}
+\bibitem{widrow1960}
+WIDROW, B.; HOFF, M. E. \textbf{Adaptive switching circuits}. IRE WESCON Conv. Rec., p. 96--104, 1960.
+\bibitem{haykin2001}
+HAYKIN, S. \textbf{Redes Neurais: Princ\'ipios e Pr\'atica}. 2. ed. Porto Alegre: Bookman, 2001.
+\bibitem{silva2016}
+SILVA, I. N.; SPATTI, D. H.; FLAUZINO, R. A. \textbf{Redes Neurais Artificiais para Engenharia e Ci\^encias Aplicadas}. 2. ed. S\~ao Paulo: Artliber, 2016.
+\bibitem{widrow1990}
+WIDROW, B.; LEHR, M. A. 30 years of adaptive neural networks. \textbf{Proc. IEEE}, v. 78, p. 1415--1442, 1990.
+\end{thebibliography}
+
+%=====================================================================
+\clearpage
+\section*{Ap\^endice A \, --- \, C\'odigo-fonte \texttt{adaline\_b2.py}}
+\addcontentsline{toc}{section}{Ap\^endice A --- C\'odigo-fonte}
+%=====================================================================
+
+\noindent
+Programa utilizado para obter todos os resultados apresentados neste trabalho.
+Implementa a rede Adaline com a regra Delta (classe \texttt{Adaline}), o
+Perceptron simples usado na compara\c{c}\~ao da Se\c{c}\~ao~\ref{sec:res}
+(classe \texttt{Perceptron}), as m\'etricas de avalia\c{c}\~ao, os tr\^es
+protocolos de teste descritos na Se\c{c}\~ao~\ref{sec:met} e a gera\c{c}\~ao
+autom\'atica de todas as figuras. A execu\c{c}\~ao padr\~ao
+(\texttt{python adaline\_b2.py}) reproduz integralmente o experimento; os
+hiperpar\^ametros podem ser alterados pela linha de comando, por exemplo
+\texttt{-{}-eta 0.01 -{}-eps 1e-7 -{}-seed 7}.
+
+\vspace{0.3cm}
+
+{\singlespacing
+\IfFileExists{adaline_b2.py}%
+  {\lstinputlisting[style=pycode]{adaline_b2.py}}%
+  {\lstinputlisting[style=pycode]{../adaline_b2.py}}%
+}
+
+\end{document}
