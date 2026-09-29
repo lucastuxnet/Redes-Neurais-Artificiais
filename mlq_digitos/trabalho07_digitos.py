@@ -2,10 +2,6 @@
 """
 Trabalho 07 - Reconhecimento de Dígitos com Perceptron Multicamadas (MLP)
 
-Disciplina : EL056 - Redes Neurais Artificiais (PPGEELT/UFU)
-Professor  : Prof. Dr. Keiji Yamanaka
-Aluno      : Lucas Albino Martins (12622EEL006)
-
 O programa:
   1. constrói uma base de dados com os dígitos 0-9 renderizados em cinco
      fontes TrueType diferentes (50 padrões), em representação bipolar;
