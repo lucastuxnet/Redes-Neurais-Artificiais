@@ -91,47 +91,6 @@ negativos, e o "maior" deles é só o **menos ruim** — não é reconhecimento.
 
 ---
 
-## Relatório
-
-```bash
-python3 figuras.py          # gera as figuras primeiro
-cd latex
-pdflatex relatorio.tex
-pdflatex relatorio.tex      # 2a passada, para as referências
-```
-
-**21 páginas**, coluna única, 6 referências, no padrão ABNT NBR 14724:
-
-| páginas | conteúdo |
-|---|---|
-| 1 | capa (logos UFU + PPGEELT) |
-| 2 | folha de rosto |
-| 3–8 | texto do trabalho |
-| 10–14 | Apêndice A — código de `perceptron.py` |
-| 15–21 | Apêndice B — código de `demo.py` |
-
-Usa `thebibliography` embutido, então duas passadas de `pdflatex` bastam —
-não precisa de BibTeX.
-
-### Arquivos do LaTeX
-
-| arquivo | o que é |
-|---|---|
-| `relatorio.tex` | o documento |
-| `abnt_capa.tex` | capa e folha de rosto ABNT. **É aqui que se editam autor, título, matrícula e professor** |
-| `logos/` | `logo-ufu.png` e `logo-ppgeel.png` |
-
-Os apêndices usam `\lstinputlisting` apontando para `../perceptron.py` e
-`../demo.py`. Ou seja, **o código impresso no PDF nunca fica desatualizado**:
-mudou o `.py`, é só recompilar.
-
-> A distribuição TeX Live desta máquina não tem o `babel-portuguese`, então
-> os nomes (`Figura`, `Tabela`, `Referências`) estão redefinidos à mão no
-> preâmbulo. Com o pacote instalado, dá para trocar por
-> `\usepackage[brazil]{babel}`.
-
----
-
 ## Resultados
 
 **Treinamento** — converge em 4 épocas, 100% de acerto nos dez dígitos.
@@ -155,26 +114,3 @@ mudou o `.py`, é só recompilar.
 A rede mantém 90% de acerto até **p ≈ 0,22** — cerca de 22 dos 100 pixels
 podem estar errados. Em p = 0,5 o desempenho cai para o do chute (10%), como
 esperado: aí a imagem já não tem relação nenhuma com o dígito original.
-
----
-
-## Três pontos para a apresentação
-
-1. **Por que bipolar e não binário?** Se o pixel apagado valesse 0, ele nunca
-   entraria na correção dos pesos — a ausência de tinta deixaria de ser
-   informação. Com −1, os dois estados pesam igual.
-
-2. **Por que o treino continua depois de já acertar tudo?** Na época 2 a rede
-   já acerta 10/10, mas só para na 4. Acerto é o neurônio vencedor; o
-   algoritmo exige que *cada* neurônio dê o valor exato. As épocas extras não
-   aumentam o acerto — aumentam a folga, e é a folga que vira resistência a
-   ruído.
-
-3. **Por que aguenta tanto ruído?** Os 100 pixels entram numa soma, então as
-   inversões aleatórias se cancelam. A rede não depende de nenhum pixel
-   isolado.
-
-4. **"A rede diz X" nem sempre significa que ela reconheceu.** A decisão é o
-   maior `y_in` entre os dez. Se todos forem negativos, nenhum neurônio
-   disparou e o "vencedor" é só o menos ruim. A demo 3 mostra essa diferença
-   explicitamente — é o que separa uma resposta de um chute.
