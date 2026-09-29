@@ -63,32 +63,6 @@ o mouse (esquerdo pinta, direito apaga) e a rede classifica a cada traço.
 | `r` | reseta a rede (volta a treinar só nos 10 padrões originais) |
 | `c` | limpa a tela |
 
-### Como ler o gráfico de barras
-
-A **linha do zero** é o que importa. Um neurônio só reconhece de fato quando o
-`y_in` dele fica **acima** dela. Três situações aparecem:
-
-- **uma barra acima de zero** → resposta limpa, "a rede diz: X" em verde;
-- **nenhuma barra acima de zero** → a rede *não reconheceu nada*. A demo diz
-  isso explicitamente, em laranja, em vez de inventar uma resposta;
-- **várias barras acima de zero** → resposta ambígua, também em laranja.
-
-Isso resolve a maior fonte de confusão: um rabisco qualquer produz dez valores
-negativos, e o "maior" deles é só o **menos ruim** — não é reconhecimento.
-
-### O que fazer na aula
-
-1. Rabisque qualquer coisa. A rede vai dizer *"nenhum neurônio reconheceu"*.
-2. Aperte a tecla do dígito que você quis desenhar. A rede aprende ali na
-   hora e mostra quantas correções de peso foram necessárias.
-3. Desenhe um dígito de verdade e **desloque-o um pixel para o lado**. A
-   resposta muda bastante — o perceptron **não tem invariância a translação**,
-   que é o problema que a convolução resolve.
-4. Ensine um padrão conflitante de propósito (desenhe o `1` e diga que é `7`).
-   A rede aprende, mas o rodapé avisa: *"agora só acerta 9/10 dos dígitos
-   originais"*. Aprender um padrão novo mexeu nos pesos dos outros. Aperte
-   `r` para restaurar.
-
 ---
 
 ## Resultados
