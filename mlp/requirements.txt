@@ -1,0 +1,31 @@
+# =============================================================================
+#  Trabalho 05 - Classificacao de Padroes com a Rede Neural Adaline
+# -----------------------------------------------------------------------------
+#  Requer Python 3.9 ou superior.
+#
+#  Instalacao recomendada (ambiente virtual isolado):
+#      python -m venv .venv
+#      source .venv/bin/activate        # Windows: .venv\Scripts\activate
+#      pip install -r requirements.txt
+#
+#  Depois:
+#      python adaline_b2.py                      # programa de treinamento
+#      jupyter lab Trabalho05_Adaline_B2.ipynb   # notebook de apresentacao
+# =============================================================================
+
+# --- Nucleo: necessario para adaline_b2.py e para o notebook -----------------
+numpy>=1.22            # algebra linear e gerador aleatorio (np.random.default_rng)
+pandas>=1.5            # leitura da planilha e tabelas de resultados
+matplotlib>=3.5        # figuras (curva do EQT, fronteiras, regioes de decisao)
+openpyxl>=3.0          # engine usada pelo pandas para ler Basedados_B2.xlsx
+
+# --- Notebook de apresentacao ------------------------------------------------
+jupyterlab>=4.0        # interface para abrir e apresentar o .ipynb
+ipykernel>=6.0         # kernel Python do notebook
+nbformat>=5.7          # leitura/escrita do formato .ipynb
+
+# --- Opcional: reexecutar o notebook inteiro pela linha de comando -----------
+# Util para regerar todas as saidas antes da apresentacao:
+#     jupyter nbconvert --to notebook --execute --inplace Trabalho05_Adaline_B2.ipynb
+nbconvert>=7.0
+nbclient>=0.8

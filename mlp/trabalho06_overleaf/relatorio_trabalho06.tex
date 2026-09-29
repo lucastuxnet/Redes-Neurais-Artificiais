@@ -1,0 +1,464 @@
+%% =====================================================================
+%% Trabalho 06 - Aproximação Funcional com MLP
+%% EL056 - Redes Neurais Artificiais - PPGEELT/UFU
+%% Compilar com pdfLaTeX + BibTeX (Overleaf: Menu > Compiler > pdfLaTeX)
+%% =====================================================================
+\documentclass[12pt,oneside,a4paper,english,brazil]{abntex2}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{amsmath,amssymb,bm}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage{subcaption}
+\usepackage[portuguese,ruled,vlined,linesnumbered]{algorithm2e}
+\usepackage{xcolor}
+\usepackage[alf]{abntex2cite}
+
+\graphicspath{{figuras/}}
+
+%% ---------------------------------------------------------------------
+%% Dados da capa e folha de rosto
+%% ---------------------------------------------------------------------
+\titulo{Trabalho 06: Aproximação Funcional com Perceptron Multicamadas}
+\autor{Lucas A. Martins}
+\local{Uberlândia -- MG}
+\data{2026}
+\instituicao{%
+  Universidade Federal de Uberlândia -- UFU
+  \par
+  Faculdade de Engenharia Elétrica -- FEELT
+  \par
+  Programa de Pós-Graduação em Engenharia Elétrica -- PPGEELT}
+\tipotrabalho{Relatório técnico}
+\preambulo{Relatório apresentado à disciplina EL056 -- Redes Neurais Artificiais,
+do Programa de Pós-Graduação em Engenharia Elétrica da Universidade Federal de
+Uberlândia, como requisito parcial para aprovação.\\[1em]
+Matrícula: 12622EEL006}
+\orientador[Professor:]{Prof. Dr. Keiji Yamanaka}
+
+\makeatletter
+\hypersetup{
+  pdftitle={\@title}, pdfauthor={\@author},
+  pdfsubject={EL056 - Redes Neurais Artificiais},
+  colorlinks=true, linkcolor=blue!50!black, citecolor=blue!50!black,
+  urlcolor=blue!50!black, bookmarksdepth=4}
+\makeatother
+
+\setlength{\parindent}{1.25cm}
+\setlength{\parskip}{0.1cm}
+\SetAlgoCaptionSeparator{ --}
+\newcommand{\mse}{\mathrm{MSE}}
+
+%% Relatório curto: seções numeradas sem capítulo e numeração contínua
+\renewcommand{\thesection}{\arabic{section}}
+\counterwithout{figure}{chapter}
+\counterwithout{table}{chapter}
+\counterwithout{equation}{chapter}
+
+\begin{document}
+\selectlanguage{brazil}
+\frenchspacing
+
+\imprimircapa
+\imprimirfolhaderosto
+
+\textual
+
+%% =====================================================================
+\section{Introdução}
+%% =====================================================================
+Aproximar uma função desconhecida $f:\mathbb{R}\to\mathbb{R}$ a partir de um
+conjunto finito de amostras $\{(x_p,t_p)\}_{p=1}^{P}$ é um dos problemas
+clássicos de redes neurais: a rede deve produzir uma função contínua que
+passe próxima dos pontos observados e que tenha comportamento razoável entre
+eles. Neste trabalho, os $P=11$ pontos fornecidos no enunciado
+(Tabela~\ref{tab:dados}) são aproximados por um Perceptron Multicamadas (MLP)
+treinado por retropropagação do erro (\textit{backpropagation}), implementado
+integralmente em NumPy.
+
+\begin{table}[H]
+\centering
+\caption{Pontos amostrados fornecidos no enunciado.}
+\label{tab:dados}
+\footnotesize\setlength{\tabcolsep}{2.5pt}
+\begin{tabular}{l*{11}{r}}
+\toprule
+$x$ & 0 & 0,1 & 0,2 & 0,3 & 0,4 & 0,5 & 0,6 & 0,7 & 0,8 & 0,9 & 1,0\\
+$t$ & $-$0,9602 & $-$0,5770 & $-$0,0729 & 0,3771 & 0,6405 & 0,6600 & 0,4609 & 0,1336 & $-$0,2013 & $-$0,4344 & $-$0,5000\\
+\bottomrule
+\end{tabular}
+\legend{Fonte: enunciado do Trabalho 06.}
+\end{table}
+
+Além do treinamento da rede pedida, investigam-se o efeito do número de
+neurônios ocultos, da taxa de aprendizado, do termo de momento, da
+inicialização dos pesos e do modo de treinamento, bem como a capacidade de
+generalização e de extrapolação da rede obtida.
+
+%% =====================================================================
+\section{Fundamentação teórica}
+%% =====================================================================
+
+\subsection{O Perceptron Multicamadas}
+Um neurônio artificial calcula a soma ponderada de suas entradas acrescida de
+um bias, $\mathit{net}=\mathbf{w}^{\top}\mathbf{x}+b$, e aplica uma função de
+ativação $\varphi(\mathit{net})$~\cite{haykin2009}. Um MLP organiza esses
+neurônios em camadas totalmente conectadas. Para o problema escalar deste
+trabalho usa-se a topologia $1$--$N$--$1$: uma entrada, $N$ neurônios ocultos
+com tangente hiperbólica e um neurônio de saída linear. Em notação matricial,
+para um lote $\mathbf{X}\in\mathbb{R}^{1\times P}$:
+\begin{equation}
+\mathbf{net}^{(1)}=\mathbf{W}_1\mathbf{X}+\mathbf{b}_1,\qquad
+\mathbf{H}=\tanh\!\big(\mathbf{net}^{(1)}\big),\qquad
+\mathbf{Y}=\mathbf{W}_2\mathbf{H}+b_2,
+\label{eq:forward}
+\end{equation}
+com $\mathbf{W}_1,\mathbf{b}_1\in\mathbb{R}^{N\times1}$,
+$\mathbf{W}_2\in\mathbb{R}^{1\times N}$ e $b_2\in\mathbb{R}$, totalizando
+$3N+1$ parâmetros livres.
+
+\subsection{Funções de ativação}
+A tangente hiperbólica $\varphi(v)=\tanh(v)$ é sigmoidal, limitada em
+$(-1,1)$, antissimétrica e diferenciável, com derivada expressa pela própria
+saída:
+\begin{equation}
+\varphi'(v)=1-\tanh^2(v)=1-h^2.
+\end{equation}
+A antissimetria acelera o treinamento em relação à sigmoide
+logística~\cite{haykin2009}. Na saída adota-se a ativação linear
+$\varphi(v)=v$, com $\varphi'(v)=1$. Assim a amplitude da resposta não fica
+limitada a $(-1,1)$ e a rede implementa uma combinação linear de funções
+sigmoidais deslocadas e escaladas.
+
+\subsection{Teorema da Aproximação Universal}
+\citeonline{cybenko1989} demonstrou que somas finitas da forma
+\begin{equation}
+G(x)=\sum_{j=1}^{N}\alpha_j\,\sigma\!\left(w_j x+\theta_j\right)
+\label{eq:uat}
+\end{equation}
+com $\sigma$ sigmoidal contínua são densas no espaço das funções contínuas
+sobre um compacto: para toda $f$ contínua e todo $\varepsilon>0$ existe $N$
+finito tal que $|G(x)-f(x)|<\varepsilon$ em todo o domínio.
+\citeonline{hornik1991} mostrou que a propriedade decorre da própria
+arquitetura em camadas, valendo para qualquer ativação limitada e não
+constante. A Eq.~\eqref{eq:uat} é exatamente a rede $1$--$N$--$1$ da
+Eq.~\eqref{eq:forward}.
+
+O teorema é de \emph{existência}. Ele não informa quantos neurônios são
+necessários, não garante que o gradiente descendente encontre os pesos
+adequados, não trata da generalização a partir de poucas amostras e não diz
+nada sobre o comportamento da rede fora do domínio compacto considerado.
+Esses aspectos são avaliados empiricamente na Seção~\ref{cap:resultados}.
+
+\subsection{Algoritmo de retropropagação}
+O treinamento minimiza o erro quadrático
+\begin{equation}
+E=\frac{1}{2P}\sum_{p=1}^{P}\left(t_p-y_p\right)^2,
+\end{equation}
+cujo gradiente é obtido pela regra da cadeia, propagando o erro da saída para
+a entrada~\cite{rumelhart1986}. Definem-se os gradientes locais
+$\delta=\partial E/\partial\mathit{net}$ (a menos do fator $1/P$). Na saída
+linear,
+\begin{equation}
+\bm{\delta}^{(2)}=\mathbf{Y}-\mathbf{T},
+\end{equation}
+e, na camada oculta, o erro é retropropagado pelos pesos $\mathbf{W}_2$ e
+modulado pela derivada da ativação:
+\begin{equation}
+\bm{\delta}^{(1)}=\left(\mathbf{W}_2^{\top}\bm{\delta}^{(2)}\right)\odot\left(1-\mathbf{H}^{2}\right).
+\end{equation}
+Os gradientes em relação aos parâmetros são o produto do $\delta$ de cada
+neurônio pelo sinal que chega a ele:
+\begin{equation}
+\frac{\partial E}{\partial\mathbf{W}_2}=\frac1P\bm{\delta}^{(2)}\mathbf{H}^{\top},\quad
+\frac{\partial E}{\partial b_2}=\frac1P\sum_p\delta^{(2)}_p,\quad
+\frac{\partial E}{\partial\mathbf{W}_1}=\frac1P\bm{\delta}^{(1)}\mathbf{X}^{\top},\quad
+\frac{\partial E}{\partial\mathbf{b}_1}=\frac1P\sum_p\bm{\delta}^{(1)}_{:,p}.
+\end{equation}
+A implementação foi validada comparando esses gradientes com diferenças
+finitas centradas. O erro relativo foi inferior a $10^{-8}$ em todos os
+parâmetros.
+
+\subsection{Gradiente descendente com momento}
+Os pesos são atualizados na direção oposta ao gradiente, com taxa de
+aprendizado $\alpha$. O termo de momento $\beta$ acumula uma fração da
+atualização anterior~\cite{rumelhart1986,haykin2009}:
+\begin{equation}
+\Delta\mathbf{w}(k)=-\alpha\,\nabla_{\mathbf{w}}E+\beta\,\Delta\mathbf{w}(k-1),\qquad
+\mathbf{w}(k+1)=\mathbf{w}(k)+\Delta\mathbf{w}(k).
+\end{equation}
+O momento funciona como um filtro passa-baixas sobre as atualizações: acelera
+o avanço em direções de gradiente consistente (platôs) e amortece oscilações
+em vales estreitos. No modo \emph{em lote} faz-se uma atualização por época
+com o gradiente médio. No modo \emph{online} (padrão a padrão) faz-se uma
+atualização por amostra, em ordem aleatória a cada época. O procedimento é
+resumido no Algoritmo~\ref{alg:bp}.
+
+\begin{algorithm}[H]
+\caption{Treinamento da MLP $1$--$N$--$1$ por retropropagação com momento (modo em lote).}
+\label{alg:bp}
+\KwIn{amostras $(\mathbf{X},\mathbf{T})$; $N$, $\alpha$, $\beta$, $\mathit{tol}$, $\mathit{max\_epocas}$}
+Inicializar $\mathbf{W}_1,\mathbf{b}_1,\mathbf{W}_2,b_2$ (Nguyen--Widrow) e velocidades $\Delta\mathbf{w}\gets\mathbf{0}$\;
+\For{$k\gets1$ \KwTo $\mathit{max\_epocas}$}{
+  $\mathbf{H}\gets\tanh(\mathbf{W}_1\mathbf{X}+\mathbf{b}_1)$;\quad $\mathbf{Y}\gets\mathbf{W}_2\mathbf{H}+b_2$\tcp*{direta}
+  $\bm{\delta}^{(2)}\gets\mathbf{Y}-\mathbf{T}$;\quad $\bm{\delta}^{(1)}\gets(\mathbf{W}_2^{\top}\bm{\delta}^{(2)})\odot(1-\mathbf{H}^2)$\tcp*{retropropag.}
+  \ForEach{parâmetro $\mathbf{w}$ com gradiente $\mathbf{g}$}{
+    $\Delta\mathbf{w}\gets\beta\,\Delta\mathbf{w}-\alpha\,\mathbf{g}$;\quad $\mathbf{w}\gets\mathbf{w}+\Delta\mathbf{w}$\;
+  }
+  \lIf{$\mse=\frac1P\sum_p(t_p-y_p)^2<\mathit{tol}$}{\textbf{parar}}
+}
+\end{algorithm}
+
+\subsection{Inicialização de Nguyen--Widrow}
+Com pesos pequenos e aleatórios, as regiões de maior inclinação das tanh
+(onde $|\mathit{net}|$ é pequeno) tendem a se concentrar em uma mesma parte do
+domínio, e vários neurônios acabam fazendo o mesmo papel.
+\citeonline{nguyen1990} propuseram redimensionar os pesos da camada oculta para
+que essas regiões ativas se distribuam ao longo do intervalo de entrada. Com
+$n$ entradas e $N$ neurônios ocultos, define-se $\beta_{\mathrm{NW}}=0{,}7\,N^{1/n}$,
+sorteia-se $\mathbf{w}_j\sim\mathcal{U}(-0{,}5;\,0{,}5)$, normaliza-se cada vetor
+para $\|\mathbf{w}_j\|=\beta_{\mathrm{NW}}$ e sorteiam-se os bias em
+$\mathcal{U}(-\beta_{\mathrm{NW}};\,\beta_{\mathrm{NW}})$~\cite{fausett1994}.
+
+\subsection{Viés, variância e generalização}
+Uma rede com poucos neurônios tem viés alto e não consegue representar a
+forma da função (subajuste). Uma rede com muitos parâmetros em relação ao
+número de amostras tem variância alta e pode interpolar os pontos oscilando
+entre eles (sobreajuste). Com apenas 11 amostras, o erro de treino não serve
+para escolher $N$, porque ele sempre diminui com a capacidade da rede. Por
+isso a generalização foi estimada por validação cruzada
+\emph{leave-one-out} (LOO): para cada ponto $i$, treina-se a rede com os
+outros 10 pontos e mede-se o erro quadrático em $x_i$. O MSE-LOO é a média
+desses 11 erros.
+
+%% =====================================================================
+\section{Metodologia}
+%% =====================================================================
+A rede, a retropropagação e o otimizador foram implementados do zero em
+Python/NumPy. O programa está no arquivo \texttt{trabalho06\_mlp.py}, e a
+demonstração passo a passo, no \textit{notebook} \texttt{trabalho06\_mlp.ipynb}. A configuração base foi: MLP
+$1$--$5$--$1$, tanh na camada oculta, saída linear, inicialização de
+Nguyen--Widrow, treinamento em lote, $\alpha=0{,}05$, $\beta=0{,}9$, parada em
+$\mse<10^{-3}$ ou após 20\,000 épocas, e semente 42. Os experimentos foram os
+seguintes:
+(i)~treinamento base;
+(ii)~$N\in\{1,2,3,5,10,20\}$ treinados por 50\,000 épocas, sem parada
+antecipada;
+(iii)~$\alpha\in\{0{,}01;\,0{,}05;\,0{,}1;\,0{,}3\}$ combinado com
+$\beta\in\{0;\,0{,}5;\,0{,}9\}$,
+medindo as épocas até $\mse<10^{-3}$ (mediana de 10 sementes);
+(iv)~inicialização uniforme $\times$ Nguyen--Widrow e modo em lote $\times$
+online (10 sementes);
+(v)~MSE-LOO para cada $N$; e
+(vi)~avaliação da rede em $x\in[-1,1]$ para analisar a extrapolação.
+
+%% =====================================================================
+\section{Resultados e discussão}\label{cap:resultados}
+%% =====================================================================
+
+\subsection{Treinamento base}
+A rede $1$--$5$--$1$ atingiu $\mse=9{,}99\times10^{-4}$ em \textbf{89 épocas}.
+A Figura~\ref{fig:base} reproduz o formato das figuras do enunciado. A curva
+aprendida é suave, tem pico próximo de $x\approx0{,}46$ e passa próxima dos 11
+pontos. O maior desvio ocorre em $x=1{,}0$ ($y=-0{,}572$ para $t=-0{,}500$).
+Esse ajuste é mais fiel aos pontos do que a curva ilustrativa do enunciado,
+cujo pico fica perto de $0{,}5$ e que se afasta visivelmente dos pontos em
+$x=0$ e $x\in\{0{,}4;\,0{,}5\}$. Continuando o treinamento sem parada
+antecipada, o MSE cai para $8{,}2\times10^{-5}$ em 50\,000 épocas
+(Figura~\ref{fig:curva}), mas quase toda a redução acontece nas primeiras
+centenas de épocas. Os pesos finais estão na Tabela~\ref{tab:pesos}.
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}{0.38\textwidth}\centering
+  \includegraphics[width=\linewidth]{dados.png}
+  \caption{Pontos amostrados.}
+\end{subfigure}\hfill
+\begin{subfigure}{0.38\textwidth}\centering
+  \includegraphics[width=\linewidth]{aproximacao_base.png}
+  \caption{Aproximação pela MLP $1$--$5$--$1$.}
+\end{subfigure}
+\caption{Dados do enunciado e função aproximada pela rede treinada.}
+\label{fig:base}
+\legend{Fonte: elaborado pelo autor.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.62\textwidth]{curva_aprendizado.png}
+\caption{Curva de aprendizado ($\mse\times$ época, escalas logarítmicas).}
+\label{fig:curva}
+\legend{Fonte: elaborado pelo autor.}
+\end{figure}
+
+\begin{table}[H]
+\centering
+\caption{Pesos finais da rede base ($N=5$, 89 épocas).}
+\label{tab:pesos}
+\small
+\begin{tabular}{crrrrr}
+\toprule
+Neurônio oculto $j$ & 1 & 2 & 3 & 4 & 5\\
+\midrule
+$w^{(1)}_j$ & 3,7694 & $-$3,8397 & 3,4926 & 3,5000 & $-$3,5034\\
+$b^{(1)}_j$ & $-$0,6305 & 2,6729 & 1,3174 & 2,2503 & $-$0,3970\\
+$w^{(2)}_j$ & 1,3552 & 0,9670 & $-$0,7331 & $-$0,2684 & $-$0,2506\\
+\midrule
+\multicolumn{6}{l}{Bias da saída: $b_2=-0{,}3750$}\\
+\bottomrule
+\end{tabular}
+\legend{Fonte: elaborado pelo autor.}
+\end{table}
+
+\subsection{Número de neurônios e generalização}
+A Figura~\ref{fig:neuronios} e a Tabela~\ref{tab:neuronios} mostram o efeito
+de $N$. Com $N=1$ a rede só consegue representar um degrau sigmoidal (viés
+alto, MSE de $0{,}14$). Dois neurônios já capturam o formato de sino, porque
+a diferença de duas sigmoides deslocadas forma uma ``lombada''. O erro de
+treino cai de forma monótona com $N$, e com $N=20$ (61 parâmetros para 11
+pontos) a rede interpola os dados até a precisão de máquina. O MSE-LOO
+(Figura~\ref{fig:loo}), por outro lado, é mínimo em $N=5$
+($8{,}4\times10^{-4}$) e piora 30 vezes em $N=20$
+($2{,}7\times10^{-2}$). Nesse caso, a rede passa exatamente pelos pontos
+de treino, mas erra os pontos retirados. Esse é o dilema viés--variância e
+justifica a escolha de $N=5$.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.78\textwidth]{neuronios.png}
+\caption{Aproximação obtida para diferentes números de neurônios ocultos (50\,000 épocas).}
+\label{fig:neuronios}
+\legend{Fonte: elaborado pelo autor.}
+\end{figure}
+
+\begin{table}[H]
+\centering
+\caption{Erro de treino e erro de validação \emph{leave-one-out} em função de $N$.}
+\label{tab:neuronios}
+\small
+\begin{tabular}{rrrrr}
+\toprule
+$N$ & Parâmetros & $\mse$ treino & $\mse$ LOO & Maior $|e|$ LOO\\
+\midrule
+1  & 4  & $1{,}41\times10^{-1}$ & $3{,}31\times10^{-1}$ & 1,210\\
+2  & 7  & $2{,}27\times10^{-4}$ & $2{,}61\times10^{-3}$ & 0,118\\
+3  & 10 & $1{,}81\times10^{-4}$ & $2{,}86\times10^{-3}$ & 0,114\\
+\textbf{5}  & \textbf{16} & $\bm{8{,}22\times10^{-5}}$ & $\bm{8{,}43\times10^{-4}}$ & \textbf{0,076}\\
+10 & 31 & $1{,}56\times10^{-5}$ & $1{,}31\times10^{-3}$ & 0,082\\
+20 & 61 & $\approx 0$ ($6{,}5\times10^{-31}$) & $2{,}68\times10^{-2}$ & 0,350\\
+\bottomrule
+\end{tabular}
+\legend{Fonte: elaborado pelo autor.}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\begin{subfigure}[b]{0.52\textwidth}\centering
+  \includegraphics[width=\linewidth]{loo.png}
+  \caption{Erro de treino e erro \emph{leave-one-out} em função de $N$.}
+  \label{fig:loo}
+\end{subfigure}\hfill
+\begin{subfigure}[b]{0.42\textwidth}\centering
+  \includegraphics[width=\linewidth]{extrapolacao.png}
+  \caption{Redes treinadas avaliadas em $x\in[-1,1]$.}
+  \label{fig:extrap}
+\end{subfigure}
+\caption{Generalização (validação cruzada) e extrapolação.}
+\label{fig:gen}
+\legend{Fonte: elaborado pelo autor.}
+\end{figure}
+
+
+
+\subsection{Taxa de aprendizado, momento, inicialização e modo de treinamento}
+A Tabela~\ref{tab:lr} mostra que o momento acelera a convergência em todas as
+taxas testadas. Com $\alpha=0{,}01$, passar de $\beta=0$ para $\beta=0{,}9$
+reduz a mediana de 6\,732 para 747 épocas (cerca de 9 vezes). Isso é
+coerente com a interpretação do momento como um aumento da taxa efetiva, que
+se aproxima de $\alpha/(1-\beta)$ em regiões de gradiente estável. Nenhuma
+combinação divergiu nesta faixa, porque o problema é pequeno e bem
+condicionado. As falhas registradas com $\beta\le0{,}5$ e $\alpha\le0{,}05$
+correspondem a uma semente que ficou presa em um platô e não atingiu a
+tolerância em 50\,000 épocas.
+
+\begin{table}[H]
+\centering
+\begin{minipage}[t]{0.56\textwidth}\centering
+\caption{Épocas até $\mse<10^{-3}$ (mediana de 10 sementes; entre parênteses, quantas convergiram).}
+\label{tab:lr}
+\small
+\begin{tabular}{rccc}
+\toprule
+$\alpha$ & $\beta=0$ & $\beta=0{,}5$ & $\beta=0{,}9$\\
+\midrule
+0,01 & 6\,732 (9/10) & 3\,367 (9/10) & 747 (10/10)\\
+0,05 & 1\,347 (9/10) & 737 (10/10) & 157 (10/10)\\
+0,10 & 736 (10/10) & 369 (10/10) & 117 (10/10)\\
+0,30 & 246 (10/10) & 124 (10/10) & 80 (10/10)\\
+\bottomrule
+\end{tabular}
+\legend{Fonte: elaborado pelo autor.}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.40\textwidth}\centering
+\caption{Inicialização e modo de treinamento (épocas até $\mse<10^{-3}$, mediana de 10 sementes).}
+\label{tab:init}
+\small\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lrr}
+\toprule
+Inicialização & Em lote & Online\\
+\midrule
+Uniforme & 6\,297 & 921\\
+Nguyen--Widrow & \textbf{157} & \textbf{25}\\
+\bottomrule
+\end{tabular}
+\legend{Fonte: elaborado pelo autor.}
+\end{minipage}
+\end{table}
+
+A inicialização teve efeito ainda maior (Tabela~\ref{tab:init}). Com pesos
+uniformes em $(-0{,}5;\,0{,}5)$ e entradas em $[0,1]$, todas as tanh operam
+quase na região linear, e o treinamento em lote precisou de mediana de 6\,297
+épocas. Com Nguyen--Widrow foram 157 épocas, cerca de 40 vezes menos. No modo
+online a rede faz 11 atualizações por época, o que reduz o número de épocas.
+Comparando pelo número de atualizações de pesos, porém, a diferença é pequena
+com Nguyen--Widrow ($24{,}5\times11\approx270$ contra 157).
+
+
+
+\subsection{Extrapolação}
+A Figura~\ref{fig:extrap} avalia redes com $N=3$, $5$ e $20$ no intervalo
+$[-1,1]$ dos eixos do enunciado. Dentro de $[0,1]$ (faixa amarela) as três
+curvas praticamente coincidem. Fora desse intervalo elas divergem, e cada uma
+segue a saturação das suas próprias tanh. A rede com $N=20$ ainda apresenta
+ondulações sem nenhuma relação com os dados. Esse comportamento ilustra o
+limite do Teorema da Aproximação Universal: a garantia vale apenas no domínio
+compacto coberto pelas amostras, e a rede não aprende a lei que gerou os
+dados.
+
+
+
+%% =====================================================================
+\section{Conclusão}
+%% =====================================================================
+Uma MLP $1$--$5$--$1$ com tangente hiperbólica na camada oculta e saída
+linear, treinada por retropropagação com momento, aproximou os 11 pontos do
+enunciado com $\mse<10^{-3}$ em 89 épocas. A curva obtida é suave e fiel aos
+dados, como pedido no trabalho. Os experimentos confirmaram a teoria:
+(i)~o número de neurônios deve ser escolhido pelo erro de generalização e
+não pelo erro de treino, e a validação \emph{leave-one-out} indicou $N=5$ e
+mostrou sobreajuste com $N=20$;
+(ii)~o momento e a inicialização de Nguyen--Widrow reduzem o tempo de
+treinamento em uma e duas ordens de grandeza, respectivamente; e
+(iii)~a aproximação só é confiável dentro do intervalo amostrado. Como
+extensões possíveis, ficam técnicas de regularização (\textit{weight decay},
+parada antecipada por validação) e otimizadores de segunda ordem, como
+Levenberg--Marquardt.
+
+\postextual
+\bibliography{referencias}
+
+\end{document}
