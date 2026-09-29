@@ -1,6 +1,6 @@
 """
 Demonstracoes interativas para a apresentacao.
-Trabalho 07 - Disciplina de Redes Neurais
+Trabalho 04 - Disciplina de Redes Neurais
 
 Rode:  python3 demo.py            (mostra o menu)
        python3 demo.py 1          (treino passo a passo)
