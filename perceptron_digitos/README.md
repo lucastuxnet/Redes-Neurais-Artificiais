@@ -1,4 +1,4 @@
-# Trabalho 04 — Reconhecimento de 10 Dígitos com o Perceptron
+# Trabalho 07 — Reconhecimento de 10 Dígitos com o Perceptron
 
 Disciplina de Redes Neurais · Pós-Graduação em Engenharia Elétrica, UFU
 
