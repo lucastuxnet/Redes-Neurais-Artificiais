@@ -1,0 +1,162 @@
+%=====================================================================
+%  BLOCO REUTILIZAVEL: CAPA + FOLHA DE ROSTO (ABNT NBR 14724)
+%  Extraido do modelo fornecido pelo usuario (PPGEELT/UFU).
+%  Este arquivo e' pensado para ser colado no preambulo (antes de
+%  \begin{document}) de qualquer trabalho que precise da mesma capa.
+%=====================================================================
+
+%--------------------------- Logos opcionais --------------------------
+\newcommand{\logoou}[2]{%
+  \IfFileExists{#1}{\includegraphics[height=#2,width=\linewidth,keepaspectratio]{#1}}%
+                   {\rule{0pt}{#2}}}
+
+%=====================================================================
+%  >>>>>>>>>>>>>>  PREENCHA AQUI OS DADOS DO TRABALHO  <<<<<<<<<<<<<<
+%=====================================================================
+\newcommand{\vazio}{}   % marcador interno para campos opcionais -- nao altere
+
+% AJUSTE AQUI conforme necessario:
+\newcommand{\Autor}{LUCAS ALBINO MARTINS\\12622EEL006}
+\newcommand{\Titulo}{Trabalho 07 -- Reconhecimento de D\'igitos com Perceptron Multicamadas}
+\newcommand{\Subtitulo}{Disciplina: EL056 - Redes Neurais Artificiais}
+\newcommand{\Orientador}{Prof. Dr. Keiji Yamanaka}
+\newcommand{\Coorientador}{}                    % vazio se nao houver
+\newcommand{\Matricula}{}                       % vazio para omitir
+\newcommand{\Local}{Uberl\^andia}
+\newcommand{\Ano}{2026}
+
+% ---- Titulo do elemento textual (cabecalho da 1a pagina de texto) ----
+\newcommand{\TituloTexto}{Reconhecimento de d\'igitos de cinco fontes
+com Perceptron Multicamadas treinado por backpropagation}
+
+% ---- Nota de apresentacao da folha de rosto --------------------------
+\newcommand{\NotaApresentacao}{%
+  Trabalho apresentado ao Programa de P\'os-Gradua\c{c}\~ao em Engenharia
+  El\'etrica (PPGEELT) da Universidade Federal de Uberl\^andia como
+  requisito parcial de avalia\c{c}\~ao da disciplina.
+
+  \vspace{0.45cm}
+  Disciplina: EL056 - Redes Neurais Artificiais.
+
+  \vspace{0.45cm}
+  Professor: \Orientador.
+  \ifx\Coorientador\vazio\else
+
+    \vspace{0.2cm}
+    Coorientador: \Coorientador.
+  \fi
+}
+
+%--------------------- Logos (pasta logos/) ------------------------------------------
+\newcommand{\LogoEsquerda}{logos/logo-ppgeel.png}
+\newcommand{\LogoDireita}{logos/logo-ufu.png}
+\newcommand{\AlturaLogoEsq}{2.2cm}   % ajuste fino da altura de cada logo
+\newcommand{\AlturaLogoDir}{2.6cm}
+
+%=====================================================================
+%  CABECALHO INSTITUCIONAL (logos + nome da instituicao + filete)
+%=====================================================================
+\newcommand{\cabecalhoinstitucional}{%
+  \begin{center}
+    \noindent
+    \begin{minipage}[c]{0.19\textwidth}
+      \raggedright
+      \logoou{\LogoEsquerda}{\AlturaLogoEsq}
+    \end{minipage}%
+    \hfill
+    \begin{minipage}[c]{0.58\textwidth}
+      \centering
+      \singlespacing
+      {\fontsize{12}{15}\selectfont\bfseries
+        UNIVERSIDADE FEDERAL DE UBERL\^ANDIA\par}
+      \vspace{0.25cm}
+      {\fontsize{12}{15}\selectfont
+        PPGEELT -- P\'os-Gradua\c{c}\~ao em Engenharia El\'etrica\par}
+    \end{minipage}%
+    \hfill
+    \begin{minipage}[c]{0.19\textwidth}
+      \raggedleft
+      \logoou{\LogoDireita}{\AlturaLogoDir}
+    \end{minipage}
+
+    \vspace{0.35cm}
+    \rule{\textwidth}{1.1pt}
+  \end{center}
+}
+
+%=====================================================================
+%  CAPA -- ABNT NBR 14724
+%=====================================================================
+\newcommand{\fazcapa}{%
+  \thispagestyle{empty}
+  \begin{center}
+    \cabecalhoinstitucional
+
+    \vspace{2.5cm}
+
+    {\fontsize{12}{15}\selectfont\MakeUppercase{\Autor}\par}
+
+    \ifx\Matricula\vazio\else
+      \vspace{0.4cm}
+      {\fontsize{11}{14}\selectfont Matr\'icula: \Matricula\par}
+    \fi
+
+    \vspace{4.0cm}
+
+    {\fontsize{16}{20}\selectfont\bfseries\MakeUppercase{\Titulo}\par}
+    \ifx\Subtitulo\vazio\else
+      \vspace{0.35cm}
+      {\fontsize{13}{16}\selectfont\Subtitulo\par}
+    \fi
+
+    \vfill
+
+    {\fontsize{12}{15}\selectfont \Local\par}
+    \vspace{0.15cm}
+    {\fontsize{12}{15}\selectfont \Ano\par}
+  \end{center}
+  \newpage
+  \setcounter{page}{1}   % a contagem ABNT comeca na folha de rosto
+}
+
+%=====================================================================
+%  FOLHA DE ROSTO -- ABNT NBR 14724
+%=====================================================================
+\newcommand{\fazfolhaderosto}{%
+  \thispagestyle{empty}
+  \begin{center}
+    \cabecalhoinstitucional
+
+    \vspace{2.0cm}
+
+    {\fontsize{12}{15}\selectfont\MakeUppercase{\Autor}\par}
+
+    \vspace{3.0cm}
+
+    {\fontsize{16}{20}\selectfont\bfseries\MakeUppercase{\Titulo}\par}
+    \ifx\Subtitulo\vazio\else
+      \vspace{0.35cm}
+      {\fontsize{13}{16}\selectfont\Subtitulo\par}
+    \fi
+  \end{center}
+
+  \vspace{2.0cm}
+
+  \hfill
+  \begin{minipage}{0.5\textwidth}
+    \singlespacing
+    \setlength{\parindent}{0pt}
+    \fontsize{10}{12}\selectfont
+    \justifying
+    \NotaApresentacao
+  \end{minipage}
+
+  \vfill
+
+  \begin{center}
+    {\fontsize{12}{15}\selectfont \Local\par}
+    \vspace{0.15cm}
+    {\fontsize{12}{15}\selectfont \Ano\par}
+  \end{center}
+  \newpage
+}

@@ -1,0 +1,4 @@
+Coloque aqui os logos usados na capa e na folha de rosto:
+  logo-ppgeel.png
+  logo-ufu.png
+Se os arquivos nao existirem, o LaTeX compila normalmente e deixa o espaco dos logos vazio.

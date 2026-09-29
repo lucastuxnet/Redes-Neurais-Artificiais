@@ -1,0 +1,484 @@
+{
+  "configuracao": {
+    "fontes": [
+      {
+        "rotulo": "Sem serifa negrito (DejaVu Sans Bold)",
+        "arquivo": "DejaVuSans-Bold.ttf"
+      },
+      {
+        "rotulo": "Serifada regular (Liberation Serif)",
+        "arquivo": "LiberationSerif-Regular.ttf"
+      },
+      {
+        "rotulo": "Sem serifa fina (DejaVu Sans ExtraLight)",
+        "arquivo": "DejaVuSans-ExtraLight.ttf"
+      },
+      {
+        "rotulo": "Manuscrita/cursiva (Kalam)",
+        "arquivo": "Kalam-Regular.ttf"
+      },
+      {
+        "rotulo": "Serifada condensada (DejaVu Serif Condensed)",
+        "arquivo": "DejaVuSerifCondensed.ttf"
+      }
+    ],
+    "grade": [
+      12,
+      9
+    ],
+    "n_entradas": 108,
+    "n_padroes": 50,
+    "limiar_binarizacao": 0.3,
+    "n_ocultos": 20,
+    "alfa": 0.01,
+    "momento": 0.8,
+    "tolerancia": 0.05,
+    "max_epocas": 5000,
+    "amplitude_pesos": 0.1,
+    "semente": 2026,
+    "niveis_ruido": [
+      0.0,
+      0.05,
+      0.1,
+      0.15,
+      0.2
+    ],
+    "repeticoes_ruido": 30
+  },
+  "base": {
+    "pixels_ativos_media_por_fonte": [
+      67.0,
+      39.9,
+      29.0,
+      39.9,
+      40.6
+    ]
+  },
+  "treino": {
+    "epocas": 144,
+    "erro_inicial": 76.24434807703706,
+    "erro_final": 0.049751548176409394,
+    "convergiu": true,
+    "acuracia": 1.0,
+    "epocas_sem_momento": 663,
+    "acuracia_sem_momento": 1.0,
+    "matriz_confusao": [
+      [
+        5,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        5,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        5,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        5,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        5,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        5,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        5,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        5,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        5,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        5
+      ]
+    ],
+    "matriz_confusao_ruido20": [
+      [
+        138,
+        0,
+        0,
+        1,
+        1,
+        2,
+        3,
+        0,
+        2,
+        3
+      ],
+      [
+        0,
+        146,
+        0,
+        0,
+        1,
+        1,
+        1,
+        1,
+        0,
+        0
+      ],
+      [
+        0,
+        1,
+        147,
+        0,
+        1,
+        0,
+        0,
+        1,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        1,
+        141,
+        0,
+        2,
+        0,
+        0,
+        6,
+        0
+      ],
+      [
+        2,
+        0,
+        1,
+        0,
+        145,
+        2,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        1,
+        1,
+        0,
+        143,
+        5,
+        0,
+        0,
+        0
+      ],
+      [
+        1,
+        0,
+        0,
+        1,
+        0,
+        4,
+        143,
+        0,
+        1,
+        0
+      ],
+      [
+        0,
+        0,
+        2,
+        0,
+        1,
+        0,
+        0,
+        146,
+        1,
+        0
+      ],
+      [
+        9,
+        0,
+        0,
+        2,
+        0,
+        3,
+        7,
+        0,
+        128,
+        1
+      ],
+      [
+        1,
+        0,
+        3,
+        3,
+        2,
+        1,
+        0,
+        0,
+        0,
+        140
+      ]
+    ]
+  },
+  "ruido": {
+    "niveis": [
+      0.0,
+      0.05,
+      0.1,
+      0.15,
+      0.2
+    ],
+    "acuracia_media": [
+      1.0,
+      1.0,
+      1.0,
+      0.9886666666666667,
+      0.9446666666666668
+    ],
+    "acuracia_desvio": [
+      0.0,
+      0.0,
+      0.0,
+      0.013349989596333869,
+      0.035282982993064635
+    ],
+    "acuracia_por_fonte_ruido10": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+    ]
+  },
+  "leave_one_font_out": [
+    {
+      "fonte_teste": "Sem serifa negrito (DejaVu Sans Bold)",
+      "acuracia_media": 0.9400000000000001,
+      "acuracia_desvio": 0.07999999999999999,
+      "acuracias": [
+        1.0,
+        1.0,
+        1.0,
+        0.8,
+        0.9
+      ],
+      "epocas_media": 143.0,
+      "erros_semente_principal": []
+    },
+    {
+      "fonte_teste": "Serifada regular (Liberation Serif)",
+      "acuracia_media": 1.0,
+      "acuracia_desvio": 0.0,
+      "acuracias": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "epocas_media": 137.6,
+      "erros_semente_principal": []
+    },
+    {
+      "fonte_teste": "Sem serifa fina (DejaVu Sans ExtraLight)",
+      "acuracia_media": 1.0,
+      "acuracia_desvio": 0.0,
+      "acuracias": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "epocas_media": 143.2,
+      "erros_semente_principal": []
+    },
+    {
+      "fonte_teste": "Manuscrita/cursiva (Kalam)",
+      "acuracia_media": 0.62,
+      "acuracia_desvio": 0.0748331477354788,
+      "acuracias": [
+        0.7,
+        0.5,
+        0.6,
+        0.7,
+        0.6
+      ],
+      "epocas_media": 141.2,
+      "erros_semente_principal": [
+        "4->9",
+        "5->7",
+        "6->8"
+      ]
+    },
+    {
+      "fonte_teste": "Serifada condensada (DejaVu Serif Condensed)",
+      "acuracia_media": 1.0,
+      "acuracia_desvio": 0.0,
+      "acuracias": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "epocas_media": 144.0,
+      "erros_semente_principal": []
+    }
+  ],
+  "leave_one_font_out_media_geral": 0.9120000000000001,
+  "sensibilidade_ocultos": [
+    {
+      "n_ocultos": 5,
+      "epocas_media": 3469.0,
+      "epocas_desvio": 1875.0876246191804,
+      "epocas": [
+        5000,
+        5000,
+        1167,
+        5000,
+        1178
+      ],
+      "convergiu": 2,
+      "acuracia_treino_media": 0.916,
+      "acuracia_ruido10_media": 0.8502666666666666,
+      "acuracia_ruido10_desvio": 0.07420524090505862
+    },
+    {
+      "n_ocultos": 10,
+      "epocas_media": 330.6,
+      "epocas_desvio": 25.772853935876018,
+      "epocas": [
+        353,
+        310,
+        297,
+        366,
+        327
+      ],
+      "convergiu": 5,
+      "acuracia_treino_media": 1.0,
+      "acuracia_ruido10_media": 0.9922666666666669,
+      "acuracia_ruido10_desvio": 0.004493946545694021
+    },
+    {
+      "n_ocultos": 20,
+      "epocas_media": 144.6,
+      "epocas_desvio": 5.782732917920384,
+      "epocas": [
+        144,
+        136,
+        143,
+        154,
+        146
+      ],
+      "convergiu": 5,
+      "acuracia_treino_media": 1.0,
+      "acuracia_ruido10_media": 0.9994666666666667,
+      "acuracia_ruido10_desvio": 0.0004988876515698513
+    },
+    {
+      "n_ocultos": 40,
+      "epocas_media": 81.4,
+      "epocas_desvio": 4.715930449020639,
+      "epocas": [
+        86,
+        79,
+        76,
+        78,
+        88
+      ],
+      "convergiu": 5,
+      "acuracia_treino_media": 1.0,
+      "acuracia_ruido10_media": 0.9994666666666667,
+      "acuracia_ruido10_desvio": 0.0006531972647421632
+    }
+  ],
+  "tempo_execucao_s": 36.2
+}
