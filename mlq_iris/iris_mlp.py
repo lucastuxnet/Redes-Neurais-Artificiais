@@ -5,8 +5,6 @@ Trabalho 08 -- Reconhecimento de Flores Iris com Perceptron Multicamadas (MLP)
 ==============================================================================
 
 Disciplina : EL056 - Redes Neurais Artificiais (PPGEELT/UFU)
-Professor  : Prof. Dr. Keiji Yamanaka
-Aluno      : Lucas Albino Martins (12622EEL006)
 
 MLP implementada do zero em NumPy: camada de saida Softmax (estavel),
 funcao de custo Entropia Cruzada categorial e retropropagacao manual com
