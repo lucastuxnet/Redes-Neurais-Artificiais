@@ -1,9 +1,6 @@
 # Proposta — Trabalho 08: Reconhecimento de Flores Iris com Perceptron Multicamadas
 
-**Aluno:** Lucas Albino Martins (12622EEL006)
 **Disciplina:** EL056 – Redes Neurais Artificiais — PPGEELT/UFU
-**Professor:** Prof. Dr. Keiji Yamanaka
-**Local/Ano:** Uberlândia, 2026
 
 ---
 
