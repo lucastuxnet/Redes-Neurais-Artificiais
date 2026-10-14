@@ -1,0 +1,57 @@
+[dados] 100 pontos aceitos em 122 sorteios (taxa de aceitacao = 0.820; teorico pi/4 = 0.785)
+[dados] salvos em ./dados_treino.csv
+
+=== Experimento principal: decaimento linear, seed 42 ===
+ epoca |     alfa | erro quant. | cruzam.
+--------------------------------------------
+     0 |        - |     0.13974 |     209
+    10 |   0.4555 |     0.04846 |      15
+    20 |   0.4060 |     0.04655 |       4
+    30 |   0.3565 |     0.04642 |       4
+    40 |   0.3070 |     0.04533 |       4
+    50 |   0.2575 |     0.04465 |       4
+    60 |   0.2080 |     0.04178 |       4
+    70 |   0.1585 |     0.04139 |       4
+    80 |   0.1090 |     0.04160 |       4
+    90 |   0.0595 |     0.04198 |       4
+   100 |   0.0100 |     0.04173 |       4
+
+Final: EQ = 0.04173 | comprimento da cadeia = 4.307 | cruzamentos = 4 | unidades mortas = 3
+
+=== Extra: decaimento exponencial, seed 42 ===
+ epoca |     alfa | erro quant. | cruzam.
+--------------------------------------------
+     0 |        - |     0.13974 |     209
+    10 |   0.3504 |     0.04955 |       5
+    20 |   0.2360 |     0.04707 |       5
+    30 |   0.1590 |     0.04418 |       3
+    40 |   0.1071 |     0.04277 |       3
+    50 |   0.0721 |     0.04331 |       3
+    60 |   0.0486 |     0.04394 |       3
+    70 |   0.0327 |     0.04370 |       3
+    80 |   0.0220 |     0.04399 |       3
+    90 |   0.0148 |     0.04376 |       3
+   100 |   0.0100 |     0.04386 |       3
+
+=== Extra: seeds diferentes (pesos iniciais e ordem), mesmos dados ===
+seed      1: EQ = 0.04258 | cruzamentos = 0 | mortas = 4 | comprimento = 3.881
+seed      7: EQ = 0.04307 | cruzamentos = 4 | mortas = 2 | comprimento = 4.568
+seed   2024: EQ = 0.03967 | cruzamentos = 2 | mortas = 1 | comprimento = 4.348
+seed  31415: EQ = 0.04207 | cruzamentos = 2 | mortas = 2 | comprimento = 4.107
+
+=== Extra (fora do enunciado): raio decrescente 10 -> 1 ===
+ epoca |     alfa | erro quant. | cruzam.
+--------------------------------------------
+     0 |        - |     0.13974 |     209
+    10 |   0.4555 |     0.10821 |       0
+    20 |   0.4060 |     0.11865 |       0
+    30 |   0.3565 |     0.09039 |       0
+    40 |   0.3070 |     0.07370 |       0
+    50 |   0.2575 |     0.04335 |       0
+    60 |   0.2080 |     0.04225 |       0
+    70 |   0.1585 |     0.04014 |       0
+    80 |   0.1090 |     0.04079 |       0
+    90 |   0.0595 |     0.04025 |       0
+   100 |   0.0100 |     0.04015 |       0
+
+Figuras salvas em ./figuras/
